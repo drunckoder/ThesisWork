@@ -1,0 +1,12 @@
+numpy
+keras
+matplotlib
+keras_sequential_ascii
+tensorflow
+scikit-learn
+seaborn
+pandas
+h5py
+graphviz
+pydot
+Pillow
