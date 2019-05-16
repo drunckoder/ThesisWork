@@ -1,20 +1,18 @@
 import os
-
 import matplotlib.pyplot as plt
 import numpy as np
-from keras import backend
+from keras import backend as K
 from keras.models import load_model
 from keras.preprocessing import image as keras_image
-
 import SplitPermutation
 from CharacterGenerator import generate_letters
 
-if backend.backend() == 'tensorflow':
-    backend.set_image_dim_ordering("th")
-
-OUT_DIR = f'{os.path.basename(__file__)}_out'
+OUT_DIR = f'{os.path.basename(__file__)[:-3]}_out'
 if not os.path.isdir(OUT_DIR):
     os.mkdir(OUT_DIR)
+
+if K.backend() == 'tensorflow':
+    K.set_image_dim_ordering("th")
 
 model = load_model('Task2.h5')
 letters = list(generate_letters())

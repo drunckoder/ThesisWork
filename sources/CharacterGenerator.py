@@ -10,7 +10,7 @@ def render_character(text: str, size: int = 32) -> Image:
     font = ImageFont.truetype("arial.ttf", 32)
     w, h = draw.textsize(text, font=font)
     draw.text((math.ceil((size - w) / 2), math.floor((size - h) / 2) - 2), text, font=font, fill='black')
-    image.save(fp='gen/{}.png'.format(text))
+    image.save(fp=f'gen/{text}.bmp')
     return image
 
 

@@ -11,30 +11,24 @@ from keras.models import Sequential
 from keras.optimizers import SGD
 from keras.utils import np_utils
 from keras_sequential_ascii import sequential_model_to_ascii_printout
-
 from CharacterGenerator import generate_data_set
+import os
+
+OUT_DIR = f'gen'
+if not os.path.isdir(OUT_DIR):
+    os.mkdir(OUT_DIR)
 
 # sys.stdout = open('output.txt', 'w')
 
 if K.backend() == 'tensorflow':
     K.set_image_dim_ordering("th")
 
-# Import Tensorflow with multiprocessing
-
-# Loading the CIFAR-10 datasets
-
 batch_size = 32
-# 32 examples in a mini-batch, smaller batch size means more updates in one epoch
 
-num_classes = 10  #
-epochs = 1  # repeat 100 times
+num_classes = 10
+epochs = 1
 
 (x_train, y_train), (x_test, y_test), class_names = generate_data_set(train_repeat=1000, test_repeat=500)
-
-# Print figure with 10 random images from each
-
-# class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
-#                'dog', 'frog', 'horse', 'ship', 'truck']
 
 fig = plt.figure(figsize=(8, 3))
 for i in range(num_classes):
@@ -91,7 +85,7 @@ def base_model():
 cnn_n = base_model()
 cnn_n.summary()
 
-# Vizualizing model structure
+# Visualising model structure
 
 sequential_model_to_ascii_printout(cnn_n)
 
@@ -140,7 +134,7 @@ print(cm)
 
 # Visualizing of confusion matrix
 import seaborn as sn
-import pandas  as pd
+import pandas as pd
 
 df_cm = pd.DataFrame(cm, range(10),
                      range(10))
