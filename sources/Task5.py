@@ -21,7 +21,7 @@ letters = list(generate_letters())
 def load_images():
     result = []
     for letter in letters:
-        img = keras_image.load_img('gen/{}.png'.format(letter))
+        img = keras_image.load_img('gen/{}.bmp'.format(letter))
         img = keras_image.img_to_array(img)
         img.reshape((1,) + img.shape)
         img = img.reshape((1,) + img.shape)
@@ -51,7 +51,7 @@ def plot_images(images, titles, letter):
         ax.set_title('{:.1f}'.format(titles[index]))
         plt.imshow(img)
     fig.tight_layout()
-    plt.savefig(fname=f'{OUT_DIR}/{letter}.png')
+    plt.savefig(fname=f'{OUT_DIR}/{letter}.bmp')
     plt.show()
 
 

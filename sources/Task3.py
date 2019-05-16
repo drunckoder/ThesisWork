@@ -17,7 +17,7 @@ letters = [c for c in generate_letters()]
 def load_images():
     result = []
     for letter in letters:
-        img = image.load_img('gen/{}.png'.format(letter))
+        img = image.load_img('gen/{}.bmp'.format(letter))
         img = image.img_to_array(img)
         img.reshape((1,) + img.shape)
         img = img.reshape((1,) + img.shape)

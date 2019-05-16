@@ -46,11 +46,9 @@ def mutate_image(image: np.array, order: tuple, size: int = 32):
     return result
 
 
-def process(image: np.array, size: int = 32):
+def process(targets: np.array, size: int = 32):
     result = []
-
-    orders = list(permutations((1, 2, 3, 4)))
-    for order in orders:
-        result.append([mutate_image(image=image[0], order=order, size=size)])
+    for image in targets:
+        result.append([process_image(target=image[0], size=size)])
     result = np.array(result)
     return result

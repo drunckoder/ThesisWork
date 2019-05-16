@@ -1,5 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
+
+np.random.seed(1337)  # for reproducibility
+# noinspection PyPep8Naming
 from keras import backend as K
 from keras.layers import Activation
 from keras.layers import Dense
@@ -11,14 +14,15 @@ from keras.models import Sequential
 from keras.optimizers import SGD
 from keras.utils import np_utils
 from keras_sequential_ascii import sequential_model_to_ascii_printout
+from sklearn.metrics import confusion_matrix
+import seaborn as sn
+import pandas as pd
 from CharacterGenerator import generate_data_set
 import os
 
-OUT_DIR = f'gen'
+OUT_DIR = f'{os.path.basename(__file__)[:-3]}_out'
 if not os.path.isdir(OUT_DIR):
     os.mkdir(OUT_DIR)
-
-# sys.stdout = open('output.txt', 'w')
 
 if K.backend() == 'tensorflow':
     K.set_image_dim_ordering("th")
@@ -28,7 +32,8 @@ batch_size = 32
 num_classes = 10
 epochs = 1
 
-(x_train, y_train), (x_test, y_test), class_names = generate_data_set(train_repeat=1000, test_repeat=500)
+(x_train, y_train), (x_test, y_test), class_names = generate_data_set(train_repeat=1000, test_repeat=500,
+                                                                      out_dir=OUT_DIR)
 
 fig = plt.figure(figsize=(8, 3))
 for i in range(num_classes):
@@ -122,8 +127,6 @@ print("Accuracy: %.2f%%" % (scores[1] * 100))
 
 # Confusion matrix result
 
-from sklearn.metrics import confusion_matrix
-
 Y_pred = cnn_n.predict(x_test, verbose=2)
 y_pred = np.argmax(Y_pred, axis=1)
 
@@ -133,8 +136,6 @@ cm = confusion_matrix(np.argmax(y_test, axis=1), y_pred)
 print(cm)
 
 # Visualizing of confusion matrix
-import seaborn as sn
-import pandas as pd
 
 df_cm = pd.DataFrame(cm, range(10),
                      range(10))

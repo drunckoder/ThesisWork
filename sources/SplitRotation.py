@@ -53,7 +53,7 @@ def process_image(target: np.array, size: int = 32):
     return result
 
 
-def apply_effect(targets: np.array, size: int = 32):
+def process(targets: np.array, size: int = 32):
     result = []
     for image in targets:
         result.append([process_image(target=image[0], size=size)])
