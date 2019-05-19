@@ -1,8 +1,7 @@
-import matplotlib.pyplot as plt
+import os
 import numpy as np
 
 np.random.seed(1337)  # for reproducibility
-# noinspection PyPep8Naming
 from keras import backend as K
 from keras.layers import Activation
 from keras.layers import Dense
@@ -13,12 +12,11 @@ from keras.layers.convolutional import MaxPooling2D
 from keras.models import Sequential
 from keras.optimizers import SGD
 from keras.utils import np_utils
-from keras_sequential_ascii import sequential_model_to_ascii_printout
+import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 import seaborn as sn
 import pandas as pd
 from CharacterGenerator import generate_data_set
-import os
 
 OUT_DIR = f'{os.path.basename(__file__)[:-3]}_out'
 if not os.path.isdir(OUT_DIR):
@@ -30,9 +28,9 @@ if K.backend() == 'tensorflow':
 batch_size = 32
 
 num_classes = 10
-epochs = 1
+epochs = 5
 
-(x_train, y_train), (x_test, y_test), class_names = generate_data_set(train_repeat=1000, test_repeat=500,
+(x_train, y_train), (x_test, y_test), class_names = generate_data_set(train_repeat=50, test_repeat=25,
                                                                       out_dir=OUT_DIR)
 
 fig = plt.figure(figsize=(8, 3))
@@ -90,10 +88,6 @@ def base_model():
 cnn_n = base_model()
 cnn_n.summary()
 
-# Visualising model structure
-
-sequential_model_to_ascii_printout(cnn_n)
-
 # Fit model
 
 cnn = cnn_n.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, validation_data=(x_test, y_test), shuffle=True)
@@ -137,8 +131,7 @@ print(cm)
 
 # Visualizing of confusion matrix
 
-df_cm = pd.DataFrame(cm, range(10),
-                     range(10))
+df_cm = pd.DataFrame(cm, range(10), range(10))
 plt.figure(figsize=(10, 7))
 sn.set(font_scale=1.4)  # for label size
 sn.heatmap(df_cm, annot=True, annot_kws={"size": 12})  # font size

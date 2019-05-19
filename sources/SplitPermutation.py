@@ -1,5 +1,4 @@
 from itertools import permutations
-
 import numpy as np
 
 
@@ -28,7 +27,7 @@ def mutate_image(image: np.array, order: tuple, size: int = 32):
         _result = []
         for i in range(len(im1)):
             _result.append(np.concatenate((im1[i], im2[i]), axis))
-        return np.array(_result)
+        return np.asarray(_result)
 
     parts = [
         (image[up_left(size)], order[0]),
@@ -46,9 +45,10 @@ def mutate_image(image: np.array, order: tuple, size: int = 32):
     return result
 
 
-def process(targets: np.array, size: int = 32):
+def process(image: np.array, size: int = 32):
     result = []
-    for image in targets:
-        result.append([process_image(target=image[0], size=size)])
-    result = np.array(result)
+    orders = list(permutations(range(0, 4)))
+    for order in orders:
+        result.append(mutate_image(image=image, order=order, size=size))
+    result = np.asarray(result)
     return result

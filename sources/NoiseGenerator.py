@@ -10,7 +10,7 @@ def noise_image(target: np.array, noise_level: float, size: int = 32):
     for y in range(size):
         for x in range(size):
             if np.random.rand() < noise_level:
-                put_pixel(target=target[0], x=x, y=y)
+                put_pixel(target=target, x=x, y=y)
 
 
 def add_noise(target: np.array, noise_level: float, size: int = 32):

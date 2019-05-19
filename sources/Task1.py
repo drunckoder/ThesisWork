@@ -1,29 +1,25 @@
-import time
-import matplotlib.pyplot as plt
+import os
 import numpy as np
+
+np.random.seed(1337)  # for reproducibility
+from keras import backend as K
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import Dropout
 from keras.layers import Flatten
-from keras.constraints import maxnorm
 from keras.optimizers import SGD
 from keras.layers import Activation
 from keras.layers.convolutional import Conv2D
 from keras.layers.convolutional import MaxPooling2D
-from keras.layers.normalization import BatchNormalization
 from keras.utils import np_utils
-from keras_sequential_ascii import sequential_model_to_ascii_printout
-from keras import backend as K
+import matplotlib.pyplot as plt
 
-# import sys
-# sys.stdout = open('output.txt', 'w')
+OUT_DIR = f'{os.path.basename(__file__)[:-3]}_out'
+if not os.path.isdir(OUT_DIR):
+    os.mkdir(OUT_DIR)
 
 if K.backend() == 'tensorflow':
     K.set_image_dim_ordering("th")
-
-# Import Tensorflow with multiprocessing
-import tensorflow as tf
-import multiprocessing as mp
 
 # Loading the CIFAR-10 datasets
 from keras.datasets import cifar10
@@ -35,7 +31,6 @@ num_classes = 10  #
 epochs = 1  # repeat 100 times
 
 (x_train, y_train), (x_test, y_test) = cifar10.load_data()
-# x_train - training data(images), y_train - labels(digits)
 
 # Print figure with 10 random images from each
 
@@ -97,10 +92,6 @@ def base_model():
 cnn_n = base_model()
 cnn_n.summary()
 
-# Vizualizing model structure
-
-sequential_model_to_ascii_printout(cnn_n)
-
 # Fit model
 
 print('---training begin')
@@ -137,7 +128,7 @@ print("Accuracy: %.2f%%" % (scores[1] * 100))
 
 # Confusion matrix result
 
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import confusion_matrix
 
 Y_pred = cnn_n.predict(x_test, verbose=2)
 y_pred = np.argmax(Y_pred, axis=1)
@@ -149,7 +140,7 @@ print(cm)
 
 # Visualizing of confusion matrix
 import seaborn as sn
-import pandas  as pd
+import pandas as pd
 
 df_cm = pd.DataFrame(cm, range(10),
                      range(10))

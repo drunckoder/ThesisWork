@@ -1,7 +1,6 @@
 numpy
 keras
 matplotlib
-keras_sequential_ascii
 tensorflow
 scikit-learn
 seaborn
@@ -10,4 +9,3 @@ h5py
 graphviz
 pydot
 Pillow
-opencv

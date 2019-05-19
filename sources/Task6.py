@@ -3,64 +3,66 @@ import matplotlib.pyplot as plt
 import numpy as np
 from keras import backend as K
 from keras.models import load_model
-from keras.preprocessing import image
+from keras.preprocessing import image as keras_image
 from CharacterGenerator import generate_letters
 from NoiseGenerator import add_noise
+
+if K.backend() == 'tensorflow':
+    K.set_image_dim_ordering("th")
 
 OUT_DIR = f'{os.path.basename(__file__)[:-3]}_out'
 if not os.path.isdir(OUT_DIR):
     os.mkdir(OUT_DIR)
 
-if K.backend() == 'tensorflow':
-    K.set_image_dim_ordering("th")
+W_DIR = 'Task2_out'
 
 model = load_model('Task2.h5')
 
-letters = [c for c in generate_letters()]
+letters = list(generate_letters())
 
 
 def load_images():
     result = []
     for letter in letters:
-        img = image.load_img('gen/{}.bmp'.format(letter))
-        img = image.img_to_array(img)
-        img.reshape((1,) + img.shape)
-        img = img.reshape((1,) + img.shape)
-        result.append(img)
-        break
-    return np.array(result)
+        image = keras_image.load_img(f'{W_DIR}/{letter}.bmp')
+        image = keras_image.img_to_array(image)
+        result.append(image)
+    return np.asarray(result)
 
 
-def classify_image(target_image, letter):
-    target_image = target_image / 255.
-    predict = model.predict(target_image)
+def classify_image(image, letter):
+    image = np.expand_dims(image / 255., axis=0)
+    predict = model.predict(image)
     print(f'Cls {letter}', end='  ')
-    print('Acc:{:.1f}'.format(predict[0][[letters.index(letter)]][0]), end='  ')
-    for i, p in enumerate(predict[0]):
-        print('{}:{:.2f}'.format(letters[i], p), end='  ', flush=True)
+    print(f'Acc:{predict[0][[letters.index(letter)]][0]:.1f}', end='  ')
+    for index, p in enumerate(predict[0]):
+        print(f'{letters[index]}:{p:.2f}', end='  ', flush=True)
     print()
 
 
-def plot_images(_images):
+def plot_images(images, noise_level):
     fig = plt.figure(figsize=(8, 3))
-    for i, img in enumerate(_images):
-        img = img[0].astype('int32').transpose((1, 2, 0))
-        ax = fig.add_subplot(2, 5, 1 + i, xticks=[], yticks=[])
-        ax.set_title(letters[i])
-        plt.imshow(img)
+    for index, image in enumerate(images):
+        image = image.astype('int32').transpose((1, 2, 0))
+        ax = fig.add_subplot(2, 5, 1 + index, xticks=[], yticks=[])
+        ax.set_title(letters[index])
+        plt.imshow(image)
+    plt.savefig(fname=f'{OUT_DIR}/{noise_level}.png')
     plt.show()
 
 
-# np.random.seed(42)
+def run():
+    np.random.seed(42)
 
-for c in range(10):
-    images = load_images()
-    noise_level = c / 10.
-    print(f'Noise level: {noise_level}')
-    add_noise(images, noise_level=noise_level)
-    # plot_images(images)
+    for i in range(10):
+        images = load_images()
+        noise_level = i / 10.
+        print(f'Noise level: {noise_level}')
+        add_noise(target=images, noise_level=noise_level)
+        plot_images(images, noise_level)
 
-    image.save_img(f'{OUT_DIR}/{noise_level}.bmp', images[0][0])
+        for x, im in enumerate(images):
+            classify_image(im, letters[x])
 
-    for x, im in enumerate(images):
-        classify_image(im, letters[x])
+
+run()
