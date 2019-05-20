@@ -9,6 +9,7 @@ from NoiseGenerator import add_noise
 from copy import deepcopy
 import seaborn as sns
 import pandas as pd
+import math
 
 if K.backend() == 'tensorflow':
     K.set_image_dim_ordering("th")
@@ -79,22 +80,32 @@ def plot_images(images, predictions, noise_level):
 def plot_graph(data):
     sns.set(style="darkgrid")
 
-    data_frame = pd.DataFrame(data=data, columns=['noise', 'acc'])
+    data_frame = pd.DataFrame(data=data, columns=['acc', 'noise'])
 
     plt.figure(figsize=(8, 6))
-    ax = sns.lineplot(x="noise", y="acc", data=data_frame)
+    ax = sns.lineplot(x="acc", y="noise", data=data_frame)
 
-    ax.set(xlabel='Noise ratio', ylabel='Accuracy')
+    ax.set(xlabel='Accuracy', ylabel='PSNR')
     plt.savefig(fname=f'{OUT_DIR}/plot.png')
-    plt.tight_layout()
     plt.show()
 
 
-def extract_data(predictions, noise_level):
+def psnr(original_image, altered_image):
+    mse = np.mean((original_image - altered_image) ** 2)
+    if mse == 0:
+        print('WARNING!')
+        return 100  # undefined
+    return 20 * math.log10(255. / math.sqrt(mse))
+
+
+def extract_data(predictions, original_images, altered_images):
     result = []
-    for prediction in predictions:
+    for index, prediction in enumerate(predictions):
         _, score, _, _ = prediction
-        result.append([noise_level, score])
+        score = np.round(score, 2)
+        original_image = original_images[index].astype('uint8')
+        altered_image = altered_images[index].astype('uint8')
+        result.append([score, psnr(original_image, altered_image)])
     return result
 
 
@@ -104,14 +115,14 @@ def run(step):
 
     data = []
 
-    for i in range(step):
+    for i in range(1, step):
         images = deepcopy(original_images)
         noise_level = i / float(step)
         print(f'Noise level: {noise_level}')
         add_noise(target=images, noise_level=noise_level)
         predictions = classify_images(images)
         # plot_images(images, predictions, noise_level)
-        data.append(extract_data(predictions, noise_level))
+        data.append(extract_data(predictions, original_images, images))
 
     data = np.asarray(data).reshape(-1, 2)
     plot_graph(data)

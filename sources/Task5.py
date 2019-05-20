@@ -4,8 +4,9 @@ import numpy as np
 from keras import backend as K
 from keras.models import load_model
 from keras.preprocessing import image as keras_image
-import SplitPermutation
 from CharacterGenerator import generate_letters
+from NoiseGenerator import add_noise
+from copy import deepcopy
 
 if K.backend() == 'tensorflow':
     K.set_image_dim_ordering("th")
@@ -31,11 +32,12 @@ def load_images():
     return np.asarray(result)
 
 
-def classify_images(images, self_letter):
+def classify_images(images):
     result = []
     for index, image in enumerate(images):
         image = np.expand_dims(image / 255., axis=0)
         predict = model.predict(image)[0]
+        self_letter = letters[index]
         self_index = letters.index(self_letter)
         self_score = predict[self_index]
 
@@ -56,30 +58,32 @@ def classify_images(images, self_letter):
     return result
 
 
-def plot_images(images, predictions):
-    fig = plt.figure(figsize=(9.6, 5.4))
-    letter = None
+def plot_images(images, predictions, noise_level):
+    fig = plt.figure(figsize=(8, 3))
     for index, img in enumerate(images):
         letter, self_score, top_letter, top_score = predictions[index]
         img = img.astype('int32').transpose((1, 2, 0))
-        ax = fig.add_subplot(4, 6, 1 + index, xticks=[], yticks=[])
+        ax = fig.add_subplot(2, 5, 1 + index, xticks=[], yticks=[])
         title = f'{letter}:{self_score:.1f}'
         if top_score:
             title += f' [{top_letter}:{top_score:.1f}]'
         ax.set_title(title)
         plt.imshow(img)
     fig.tight_layout()
-    plt.savefig(fname=f'{OUT_DIR}/{letter}.png')
+    plt.savefig(fname=f'{OUT_DIR}/{noise_level}.png')
     plt.show()
 
 
 def run():
-    images = load_images()
-    for index, image in enumerate(images):
-        letter = letters[index]
-        permutations = SplitPermutation.process(image)
-        predictions = classify_images(permutations, letter)
-        plot_images(permutations, predictions)
+    np.random.seed(1337)
+    original_images = load_images()
+    for i in range(10):
+        images = deepcopy(original_images)
+        noise_level = i / 10.
+        print(f'Noise level: {noise_level}')
+        add_noise(target=images, noise_level=noise_level)
+        predictions = classify_images(images)
+        plot_images(images, predictions, noise_level)
 
 
 run()
