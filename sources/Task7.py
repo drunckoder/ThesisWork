@@ -103,8 +103,8 @@ def extract_data(predictions, original_images, altered_images):
     for index, prediction in enumerate(predictions):
         _, score, _, _ = prediction
         score = np.round(score, 2)
-        original_image = original_images[index].astype('uint8')
-        altered_image = altered_images[index].astype('uint8')
+        original_image = original_images[index]
+        altered_image = altered_images[index]
         result.append([score, psnr(original_image, altered_image)])
     return result
 
@@ -128,4 +128,4 @@ def run(step):
     plot_graph(data)
 
 
-run(10)
+run(10000)
