@@ -73,13 +73,31 @@ def plot_images(images, predictions):
     plt.show()
 
 
+def print_table(predictions_list):
+    for predictions in predictions_list:
+        data = []
+        letter = None
+        for prediction in predictions:
+            letter, score, _, _ = prediction
+            data.append(score)
+            # print(f'{letter}, {score}')
+        _min = np.min(data)
+        _max = np.max(data)
+        _mean = np.mean(data)
+        print(f'{letter} {_min:.2f} {_max:.2f} {_mean:.2f}')
+
+
 def run():
     images = load_images()
+    predictions_list = []
     for index, image in enumerate(images):
         letter = letters[index]
         rotations = SplitRotation.process(image)
         predictions = classify_images(rotations, letter)
+        predictions_list.append(predictions)
         plot_images(rotations, predictions)
+
+    print_table(predictions_list)
 
 
 run()

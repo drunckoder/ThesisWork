@@ -52,8 +52,8 @@ def generate_angles():
 def process(image: np.array, size: int = 32):
     result = []
     angles_list = generate_angles()
-    shuffle(angles_list)
-    angles_list = angles_list[:32]
+    # shuffle(angles_list)
+    # angles_list = angles_list[:32]
     for angles in angles_list:
         angles = tuple(map(int, angles))
         result.append(mutate_image(image=image, rotation=angles, size=size))

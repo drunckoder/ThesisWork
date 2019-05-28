@@ -9,6 +9,7 @@ from GaussianNoiseGenerator import add_noise
 from copy import deepcopy
 import seaborn as sns
 import pandas as pd
+from PIL import Image
 
 if K.backend() == 'tensorflow':
     K.set_image_dim_ordering("th")
@@ -117,4 +118,4 @@ def run(step):
     plot_graph(data)
 
 
-run(10000)
+run(10)
